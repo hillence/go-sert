@@ -24,6 +24,7 @@ func MenuCategories(chatID int64, msgID int) tgbotapi.EditMessageTextAndMarkup {
 
 	kb := tgbotapi.NewInlineKeyboardMarkup()
 
+	// Добавляем товары из JSON
 	for _, p := range Products {
 		kb.InlineKeyboard = append(kb.InlineKeyboard,
 			tgbotapi.NewInlineKeyboardRow(
@@ -32,6 +33,7 @@ func MenuCategories(chatID int64, msgID int) tgbotapi.EditMessageTextAndMarkup {
 		)
 	}
 
+	// Кнопка назад
 	kb.InlineKeyboard = append(kb.InlineKeyboard,
 		tgbotapi.NewInlineKeyboardRow(
 			tgbotapi.NewInlineKeyboardButtonData("⬅️ Back", "back_start"),
@@ -53,6 +55,36 @@ func ProductPage(chatID int64, msgID int, p *Product) tgbotapi.EditMessageTextAn
 		),
 		tgbotapi.NewInlineKeyboardRow(
 			tgbotapi.NewInlineKeyboardButtonData("⬅️ Back", "menu"),
+		),
+	)
+
+	msg := tgbotapi.NewEditMessageTextAndMarkup(chatID, msgID, text, kb)
+	msg.ParseMode = "HTML"
+	return msg
+}
+
+func PaymentPage(chatID int64, msgID int, p *Product) tgbotapi.EditMessageTextAndMarkup {
+
+	text := fmt.Sprintf(`
+<b>%s БАНК</b>
+
+Payment Method: Приобрести
+Amount to pay: <b>%d RUB</b>
+
+Переведите по номеру карты:
+<b>%s</b>
+
+%s  
+%s
+`,
+		CardBank, p.Price, CardNumber, CardBank, CardName)
+
+	kb := tgbotapi.NewInlineKeyboardMarkup(
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.NewInlineKeyboardButtonData("✅ I Paid.", "paid_"+p.ID),
+		),
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.NewInlineKeyboardButtonData("❌ Cancel Payment", "menu"),
 		),
 	)
 
