@@ -1,9 +1,9 @@
 package main
 
 const (
-	BotToken         = "YOUR_TELEGRAM_BOT_TOKEN"
-	AdminID    int64 = 123456789 // @lonehq заменим позже
-	CardNumber       = "2200300586386896"
+	BotToken         = "8460782298:AAFxLv_Jx78PxopBIWkj2tRaycJ7ipTGXnA"
+	AdminID    int64 = 8306944154 // @lonehq заменим позже
+	CardNumber       = "2200300588762490"
 	CardBank         = "Райффайзен"
-	CardName         = "Олег Олегович"
+	CardName         = "Егор Николевич А."
 )
