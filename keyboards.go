@@ -6,8 +6,9 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
+// Главное меню
 func StartMenu(chatID int64) tgbotapi.MessageConfig {
-	msg := tgbotapi.NewMessage(chatID, "🔍 Welcome to bot!")
+	msg := tgbotapi.NewMessage(chatID, "🔍 Добро пожаловать!")
 
 	kb := tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
@@ -19,12 +20,12 @@ func StartMenu(chatID int64) tgbotapi.MessageConfig {
 	return msg
 }
 
-func MenuCategories(chatID int64, msgID int) tgbotapi.EditMessageTextAndMarkup {
-	text := "Select a tariff or category from the list below 👇"
+// Категории
+func MenuCategories(chatID int64) tgbotapi.MessageConfig {
+	text := "Выберите товар 👇"
 
 	kb := tgbotapi.NewInlineKeyboardMarkup()
 
-	// Добавляем товары из JSON
 	for _, p := range Products {
 		kb.InlineKeyboard = append(kb.InlineKeyboard,
 			tgbotapi.NewInlineKeyboardRow(
@@ -33,62 +34,62 @@ func MenuCategories(chatID int64, msgID int) tgbotapi.EditMessageTextAndMarkup {
 		)
 	}
 
-	// Кнопка назад
 	kb.InlineKeyboard = append(kb.InlineKeyboard,
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("⬅️ Back", "back_start"),
+			tgbotapi.NewInlineKeyboardButtonData("⬅️ Назад", "back_start"),
 		),
 	)
 
-	return tgbotapi.NewEditMessageTextAndMarkup(chatID, msgID, text, kb)
+	msg := tgbotapi.NewMessage(chatID, text)
+	msg.ReplyMarkup = kb
+
+	return msg
 }
 
-func ProductPage(chatID int64, msgID int, p *Product) tgbotapi.EditMessageTextAndMarkup {
-	text := fmt.Sprintf(
-		"<b>%s</b>\nPrice: %d RUB\n\n%s",
-		p.Name, p.Price, p.Desc,
-	)
+// Страница товара
+func ProductPage(chatID int64, p *Product) tgbotapi.MessageConfig {
+	text := fmt.Sprintf("<b>%s</b>\nЦена: %d RUB\n\n%s", p.Name, p.Price, p.Desc)
 
 	kb := tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
 			tgbotapi.NewInlineKeyboardButtonData("Приобрести", "buy_"+p.ID),
 		),
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("⬅️ Back", "menu"),
+			tgbotapi.NewInlineKeyboardButtonData("⬅️ Назад", "menu"),
 		),
 	)
 
-	msg := tgbotapi.NewEditMessageTextAndMarkup(chatID, msgID, text, kb)
+	msg := tgbotapi.NewMessage(chatID, text)
+	msg.ReplyMarkup = kb
 	msg.ParseMode = "HTML"
 	return msg
 }
 
-func PaymentPage(chatID int64, msgID int, p *Product) tgbotapi.EditMessageTextAndMarkup {
-
+// Страница оплаты
+func PaymentPage(chatID int64, p *Product) tgbotapi.MessageConfig {
 	text := fmt.Sprintf(`
 <b>%s БАНК</b>
 
-Payment Method: Приобрести
-Amount to pay: <b>%d RUB</b>
+Сумма к оплате: <b>%d RUB</b>
 
 Переведите по номеру карты:
 <b>%s</b>
 
-%s  
 %s
-`,
-		CardBank, p.Price, CardNumber, CardBank, CardName)
+%s
+`, CardBank, p.Price, CardNumber, CardBank, CardName)
 
 	kb := tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("✅ I Paid.", "paid_"+p.ID),
+			tgbotapi.NewInlineKeyboardButtonData("✅ Я оплатил", "paid_"+p.ID),
 		),
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("❌ Cancel Payment", "menu"),
+			tgbotapi.NewInlineKeyboardButtonData("❌ Отменить", "menu"),
 		),
 	)
 
-	msg := tgbotapi.NewEditMessageTextAndMarkup(chatID, msgID, text, kb)
+	msg := tgbotapi.NewMessage(chatID, text)
+	msg.ReplyMarkup = kb
 	msg.ParseMode = "HTML"
 	return msg
 }
